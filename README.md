@@ -3,10 +3,10 @@
 
 ##### 安装库
 ````
-go mod init
-go get github.com/PuerkitoBio/goquery
-go get golang.org/x/net/html/charset
-go get golang.org/x/text/encoding
+> go mod init
+> go get github.com/PuerkitoBio/goquery
+> go get golang.org/x/net/html/charset
+> go get golang.org/x/text/encoding
  ````
 ##### 目录结构
 ````
@@ -21,7 +21,7 @@ go get golang.org/x/text/encoding
 ##### 总体的逻辑是：
 ````
 > main.go中定义好调度器和爬虫初始入口后开始运行engine
-> engine中调用抓取器抓取页面内容，并提交给解析器解析出我们想要的内容
+> engine中调用抓取器抓取页面内容，并提交给解析器解析出我们想要的内容，在engine中打印
 > 调度器的作用就是控制worker的数量
 ````
  

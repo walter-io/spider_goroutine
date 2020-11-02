@@ -50,6 +50,7 @@ func (e *Engine) Run(seeds ...Request) {
 			if item == emptyDetail { // 没内容不显示
 				continue
 			}
+			// TODO 这里打印结果，如果想保存结果到磁盘中，在这里做相应的操作即可
 			fmt.Printf("Parser Item #%d: %+v\n", num, item)
 			num++
 		}
