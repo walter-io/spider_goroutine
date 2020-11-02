@@ -1,19 +1,35 @@
 package parser
 
 import (
+	"bufio"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/transform"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"spider/engine"
 
 	"testing"
 )
 
 func TestParseDetail(t *testing.T) {
-	// 造页面
-	byte, err := ioutil.ReadFile("detail_test.html")
+	url := "https://newcar.xcar.com.cn/m25935/"
+	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
-	//reader := bytes.NewReader(byte)
+	defer resp.Body.Close()
+
+	// 转为utf8
+	reader := bufio.NewReader(resp.Body)
+	encode := determineEncoding(reader)
+	utf8Reader := transform.NewReader(reader, encode.NewDecoder())
+	byte, err := ioutil.ReadAll(utf8Reader)
+	if err != nil {
+		panic(err)
+	}
 
 	// 造数据
 	name := ""
@@ -39,4 +55,15 @@ func TestParseDetail(t *testing.T) {
 		t.Errorf("Expected: %v, but got %v\n", expected, got)
 	}
 	t.Logf("Result: %v\n", res)
+}
+
+// 获取编码
+func determineEncoding(r *bufio.Reader) encoding.Encoding {
+	bytes, err := r.Peek(1024) // 先将resp.Body转换bufio.NewReader，再Peek，然后读取bufio.NewReader，所以指针并没有移动，读取的内容是全的
+	if err != nil {
+		log.Printf("Fetcher error: %v", err)
+		return unicode.UTF8
+	}
+	e, _, _ := charset.DetermineEncoding(bytes, "")
+	return e
 }
